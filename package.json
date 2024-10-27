@@ -1,0 +1,22 @@
+{
+  "name": "minify",
+  "version": "1.0.0",
+  "description": "minify urls",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config src/jest.config.cjs",
+    "coverage":"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage "
+  },
+  "type": "module",
+  "author": "Magno Gouveia",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongoose": "^8.7.3",
+    "nanoid": "^5.0.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
