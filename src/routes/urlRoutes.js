@@ -1,20 +1,6 @@
-import express from 'express'
 
-import UrlStorageController from '../controller/urlController.js'
-import WriteUrlStorageService from "../service/writeUrl.js"
-import ReadUrlStorageService from "../service/readUrl.js"
-import UrlStorageSchema from '../model/urlStorage.js'
-
-const router = express.Router()
-
-function setupUrlRoutes(mongoose){
+function setupUrlRoutes(router, urlStorageController){
     try{
-        const urlStorageSchema = new UrlStorageSchema(mongoose)
-        const writeUrlStorageService = new WriteUrlStorageService(urlStorageSchema)
-        const readUrlStorageService = new ReadUrlStorageService(urlStorageSchema)
-
-        const urlStorageController = new UrlStorageController(writeUrlStorageService, readUrlStorageService)
-
         router.post('/url', urlStorageController.createUrlStorage)
         router.get('/:indexUrl', urlStorageController.getUrlStorage)
     }catch(error){
@@ -23,4 +9,4 @@ function setupUrlRoutes(mongoose){
     }
 }
 
-export { setupUrlRoutes, router }
+export default setupUrlRoutes
