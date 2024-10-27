@@ -7,7 +7,7 @@ const DUPLICATE_ERROR_CODE = 11000
 class WriteUrlStorageService {
     constructor(urlStorageSchema){
         this.urlStorageSchema = urlStorageSchema
-        this.minUrlSize = process.env.INITIAL_MIN_URL_SIZE || 3
+        this.minUrlSize = parseInt(process.env.INITIAL_MIN_URL_SIZE) || 3
         this.nanoid = customAlphabet(alphabet, this.minUrlSize)
         this.duplicateMaxAttempts = process.env.DUPLICATE_RNG_INDEX_URL_MAX_ATTEMPT || 3
     }

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config src/jest.config.cjs",
-    "coverage":"node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage "
+    "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage "
   },
   "type": "module",
   "author": "Magno Gouveia",
