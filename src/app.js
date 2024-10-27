@@ -11,13 +11,15 @@ import UrlStorageSchema from './model/urlStorage.js'
 
 const router = express.Router()
 
+const mongodbString = process.env.MONGODB_URL_STRING
+
 async function initApp(){
     const app = express()
     app.use(express.json())
 
     console.log("Initializing project")
     try{
-        await mongoose.connect('mongodb://root:password@localhost:27017/database?authSource=admin')
+        await mongoose.connect(mongodbString)
         console.log('Connected to database')
 
         const urlStorageSchema = new UrlStorageSchema(mongoose)

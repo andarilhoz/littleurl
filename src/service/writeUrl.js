@@ -4,17 +4,16 @@ import { InternalServerError } from "../errors/customErrors.js"
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const DUPLICATE_ERROR_CODE = 11000
 
-const MAX_ATTEMPTS = 3
-
 class WriteUrlStorageService {
     constructor(urlStorageSchema){
         this.urlStorageSchema = urlStorageSchema
-        this.minUrlSize = 3
+        this.minUrlSize = process.env.INITIAL_MIN_URL_SIZE || 3
         this.nanoid = customAlphabet(alphabet, this.minUrlSize)
+        this.duplicateMaxAttempts = process.env.DUPLICATE_RNG_INDEX_URL_MAX_ATTEMPT || 3
     }
 
     async createUrlStorage(targetUrl, attempt = 0){
-        if(attempt >= MAX_ATTEMPTS){
+        if(attempt >= this.duplicateMaxAttempts){
             this.upgradeUrlSize()
             attempt = 0
         }
