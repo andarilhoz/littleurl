@@ -6,6 +6,8 @@ module.exports = {
     coverageDirectory: "../coverage",
     collectCoverageFrom:[
         "**/*.js",
-        "!model/*"
+        "!model/*",
+        "!app.js",
+        "!index.js"
     ]
 }

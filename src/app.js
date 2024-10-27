@@ -13,7 +13,7 @@ async function initApp(){
         await mongoose.connect('mongodb://root:password@localhost:27017/database?authSource=admin')
         console.log('Connected to database')
 
-        await setupUrlRoutes(mongoose)
+        setupUrlRoutes(mongoose)
 
         app.use('/', router)
         app.use(errorHandler)

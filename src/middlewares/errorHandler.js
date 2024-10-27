@@ -6,7 +6,7 @@ function errorHandler(err, req, res, next){
     }
 
     console.error(`Unexpected Error stack: ${err.stack}`, err) 
-    return res.status(500).json({message: "Unexpected Error", error})
+    return res.status(500).json({message: "Unexpected Error", error: err})
 }
 
 export default errorHandler

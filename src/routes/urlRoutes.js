@@ -7,7 +7,7 @@ import UrlStorageSchema from '../model/urlStorage.js'
 
 const router = express.Router()
 
-async function setupUrlRoutes(mongoose){
+function setupUrlRoutes(mongoose){
     try{
         const urlStorageSchema = new UrlStorageSchema(mongoose)
         const writeUrlStorageService = new WriteUrlStorageService(urlStorageSchema)
