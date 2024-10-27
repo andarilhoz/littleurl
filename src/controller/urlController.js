@@ -11,8 +11,11 @@ class UrlStorageController {
         try{
             const targetUrl = req.body.targetUrl
             const newUrlStorage = await this.writeUrlStorageService.createUrlStorage(targetUrl)
+            
+            const protocol = req.protocol;
+            const host = req.get('host');
 
-            res.status(201).json({message: `http://localhost:3000/${newUrlStorage.indexUrl}`})
+            res.status(201).json({message: `${protocol}://${host}/${newUrlStorage.indexUrl}`})
         }catch(error){
             next(error)
         }

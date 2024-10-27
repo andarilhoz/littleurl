@@ -24,7 +24,7 @@ describe("UrlStorage Controller", () => {
         next = jest.fn();
 
         writeUrlStorageService = {
-            createUrlStorage: jest.fn()
+            createUrlStorage: jest.fn(() => Promise.resolve({indexUrl: "0Zh"}))
         }
 
         readUrlStorageService = {
@@ -47,7 +47,10 @@ describe("UrlStorage Controller", () => {
         const request = {
             body: {
                 targetUrl: "http://google.com"
-            }
+            },
+            protocol: "http",
+            
+            get: jest.fn(() => "localhost:3000")
         }
 
         
@@ -56,6 +59,7 @@ describe("UrlStorage Controller", () => {
 
         expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
         expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com")
+        expect(response.json).toHaveBeenCalledWith({message: "http://localhost:3000/0Zh"})
         expect(response.status).toHaveBeenCalledWith(201)
     })
 
