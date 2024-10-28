@@ -12,7 +12,7 @@ class WriteUrlStorageService {
         this.duplicateMaxAttempts = process.env.DUPLICATE_RNG_INDEX_URL_MAX_ATTEMPT || 3
     }
 
-    async createUrlStorage(targetUrl, attempt = 0){
+    async createUrlStorage(targetUrl, ttlSeconds, attempt = 0){
         if(attempt >= this.duplicateMaxAttempts){
             this.upgradeUrlSize()
             attempt = 0
@@ -21,16 +21,27 @@ class WriteUrlStorageService {
         try{
             const newUrlStorage = await this.urlStorageSchema.createUrlStorage({
                 indexUrl: this.nanoid(),
-                targetUrl: targetUrl
+                targetUrl: targetUrl,
+                expireAt: this.calculateExpiration(ttlSeconds)
             })
             return newUrlStorage
         }catch(err){
             if (err.code == DUPLICATE_ERROR_CODE){
                 console.warn(`Code: ${err.keyValue.indexUrl} duplicated, generating another one`)
-                return this.createUrlStorage(targetUrl, ++attempt)
+                return this.createUrlStorage(targetUrl, ttlSeconds, ++attempt)
             }
             throw new InternalServerError(`Error creating url for: ${targetUrl}`, err)
         }
+    }
+
+    calculateExpiration(ttlSeconds){
+        if(ttlSeconds == undefined){
+            return null
+        }
+        
+        const now = new Date()
+        const expirationTime = now.getTime() + ttlSeconds * 1000
+        return new Date(expirationTime)
     }
 
     upgradeUrlSize(){

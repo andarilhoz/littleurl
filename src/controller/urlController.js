@@ -10,7 +10,9 @@ class UrlStorageController {
     async createUrlStorage(req, res, next){
         try{
             const targetUrl = req.body.targetUrl
-            const newUrlStorage = await this.writeUrlStorageService.createUrlStorage(targetUrl)
+            const ttlSeconds = req.body.ttlSeconds
+            
+            const newUrlStorage = await this.writeUrlStorageService.createUrlStorage(targetUrl, ttlSeconds)
             
             const protocol = req.protocol;
             const host = req.get('host');

@@ -58,7 +58,7 @@ describe("UrlStorage Controller", () => {
         await urlStorageController.createUrlStorage(request, response, next)
 
         expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com")
+        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", undefined)
         expect(response.json).toHaveBeenCalledWith({message: "http://localhost:3000/0Zh"})
         expect(response.status).toHaveBeenCalledWith(201)
     })
@@ -75,7 +75,7 @@ describe("UrlStorage Controller", () => {
         await urlStorageController.createUrlStorage(request, response, next)
         
         expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com")
+        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", undefined)
         expect(next).toHaveBeenCalledWith(new Error('Database Error'))
     })
 
