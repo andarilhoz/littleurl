@@ -78,4 +78,18 @@ describe("WriteUrlStorage Service", () => {
         expect(result.targetUrl).toBe("http://google.com")
         expect(result.indexUrl).toBe("Zh0")
     })
+
+    test("Calculate expiration should return null if parameter is undefined", () => {
+        const result = writeUrlStorageService.calculateExpiration(undefined)
+        expect(result).toBe(null)
+    })
+    
+    test("Calculate expiration should return new Date based on seconds parameter", () => {
+        jest.useFakeTimers()
+        const fakeDate = new Date(2024, 3, 30, 12, 0, 0)
+        jest.setSystemTime(fakeDate)
+
+        const result = writeUrlStorageService.calculateExpiration(3600)
+        expect(result).toEqual(new Date(2024, 3, 30, 13, 0, 0))
+    })
 })
