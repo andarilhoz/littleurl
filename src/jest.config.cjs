@@ -8,6 +8,7 @@ module.exports = {
         "**/*.js",
         "!model/*",
         "!app.js",
-        "!index.js"
+        "!index.js",
+        "!public/**"
     ]
 }

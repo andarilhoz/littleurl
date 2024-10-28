@@ -1,3 +1,5 @@
+import he from 'he'
+
 class UrlStorageController {
     constructor(writeUrlStorageService, readUrlStorageService){
         this.writeUrlStorageService = writeUrlStorageService
@@ -28,7 +30,15 @@ class UrlStorageController {
         try{
             const indexUrl = req.params.indexUrl
             const result = await this.readUrlStorageService.findUrlByIndex(indexUrl)
-            res.setHeader('Location', result.targetUrl).sendStatus(307)
+            res.set({
+                'Cache-Control': 'private, max-age=90',
+                'Referrer-Policy': 'unsafe-url',
+                'Content-Security-Policy': 'referrer always',
+                'Content-Type': 'text/html',
+                'Location': he.decode(result.targetUrl)
+            })
+            res.sendStatus(307)
+
         }catch(error){
             next(error)
         }

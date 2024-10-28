@@ -3,6 +3,8 @@ import {afterEach, beforeEach, expect, jest} from '@jest/globals'
 import UrlStorageController from "../../controller/urlController"
 import { NotFoundError } from '../../errors/customErrors'
 
+import he from 'he'
+
 describe("UrlStorage Controller", () => {
     let response
     let next
@@ -18,7 +20,8 @@ describe("UrlStorage Controller", () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
             sendStatus: jest.fn(),
-            setHeader: jest.fn().mockReturnThis()
+            setHeader: jest.fn().mockReturnThis(),
+            set: jest.fn()
         }
         
         next = jest.fn();
@@ -112,11 +115,17 @@ describe("UrlStorage Controller", () => {
 
         readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => Promise.resolve({targetUrl: "http://google.com"}))
 
-        await urlStorageController.getUrlStorage(request, response)
+        await urlStorageController.getUrlStorage(request, response, next)
         
         expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
         expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
-        expect(response.setHeader).toHaveBeenCalledWith('Location', 'http://google.com')
+        expect(response.set).toHaveBeenCalledWith({
+            'Cache-Control': 'private, max-age=90',
+            'Referrer-Policy': 'unsafe-url',
+            'Content-Security-Policy': 'referrer always',
+            'Content-Type': 'text/html',
+            'Location': he.decode("http://google.com")
+        })
         expect(response.sendStatus).toHaveBeenCalledWith(307)
     })
 
