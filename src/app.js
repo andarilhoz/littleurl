@@ -15,6 +15,10 @@ import WriteUrlStorageService from "./service/writeUrl.js"
 import ReadUrlStorageService from "./service/readUrl.js"
 import UrlStorageSchema from './model/urlStorage.js'
 
+import APIKeysController from './controller/apiKeysController.js'
+import APIKeyService from './service/apiKeys.js'
+import APIKeysSchema from './model/apiKeys.js'
+
 const router = express.Router()
 
 const mongodbString = process.env.MONGODB_URL_STRING
@@ -34,7 +38,11 @@ async function initApp(){
 
         const urlStorageController = new UrlStorageController(writeUrlStorageService, readUrlStorageService)
 
-        setupUrlRoutes(router, urlStorageController)
+        const apiKeySchema = new APIKeysSchema(mongoose)
+        const apiKeyService = new APIKeyService(apiKeySchema)
+        const apiKeysController = new APIKeysController(apiKeyService)
+
+        setupUrlRoutes(router, urlStorageController, apiKeysController)
 
         app.use('/', router)
         app.use(errorHandler)

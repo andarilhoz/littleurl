@@ -5,6 +5,7 @@ import { expect, jest } from '@jest/globals';
 describe('setupUrlRoutes', () => {
   let router;
   let urlStorageController;
+  let apiKeyController;
 
   beforeEach(() => {
     console.error = jest.fn()
@@ -17,12 +18,19 @@ describe('setupUrlRoutes', () => {
       createUrlStorage: jest.fn(),
       getUrlStorage: jest.fn(),
     };
+
+    apiKeyController = {
+      createAPIKey: jest.fn()
+    }
+
   });
 
   test('Should create routes with correct controller methods', () => {
-    setupUrlRoutes(router, urlStorageController);
+    setupUrlRoutes(router, urlStorageController, apiKeyController);
     expect(router.post).toHaveBeenCalledWith('/url', urlStorageController.createUrlStorage);
     expect(router.get).toHaveBeenCalledWith('/:indexUrl', urlStorageController.getUrlStorage);
+    
+    expect(router.post).toHaveBeenCalledWith('/apiKey', apiKeyController.createAPIKey);
   });
 
   test('Should throw an error if route setup fails', () => {
