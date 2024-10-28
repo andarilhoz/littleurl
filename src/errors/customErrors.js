@@ -25,12 +25,19 @@ class UnauthorizedError extends CustomError {
     constructor(message = 'Unauthorized') {
       super(message, 401);
     }
-  }
+}
+
+class BadRequestError extends CustomError {
+    constructor(message = 'Bad Request'){
+        super(message, 400)
+    }
+}
   
 
 export {
     CustomError,
     NotFoundError,
     InternalServerError,
-    UnauthorizedError
+    UnauthorizedError,
+    BadRequestError
 }

@@ -32,7 +32,7 @@ describe('setupUrlRoutes', () => {
 
   test('Should create routes with correct controller methods', () => {
     setupUrlRoutes(router, urlStorageController, apiKeyController, apiKeyService);
-    expect(router.post).toHaveBeenCalledWith('/url', expect.any(Function), urlStorageController.createUrlStorage);
+    expect(router.post).toHaveBeenCalledWith('/url', expect.any(Function), expect.any(Function), urlStorageController.createUrlStorage);
     expect(router.get).toHaveBeenCalledWith('/:indexUrl', urlStorageController.getUrlStorage);
     
     expect(router.post).toHaveBeenCalledWith('/apiKey', apiKeyController.createAPIKey);

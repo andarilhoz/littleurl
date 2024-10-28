@@ -25,8 +25,8 @@ const mongodbString = process.env.MONGODB_URL_STRING
 
 async function initApp(){
     const app = express()
+    
     app.use(express.json())
-
     console.log("Initializing project")
     try{
         await mongoose.connect(mongodbString)

@@ -4,7 +4,6 @@ import app from './app.js'
 const port = process.env.PORT || 3000
 const server = express()
 
-server.use(express.json())
 server.use(app)
 
 server.listen(port, () => {

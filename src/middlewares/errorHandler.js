@@ -5,6 +5,11 @@ function errorHandler(err, req, res, next){
         return res.status(err.statusCode).json({message: err.message})
     }
 
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        console.error(err);
+        return res.status(400).json({ message: err.message })
+    }
+
     console.error(`Unexpected Error stack: ${err.stack}`, err) 
     return res.status(500).json({message: "Unexpected Error", error: err})
 }

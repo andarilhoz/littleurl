@@ -12,6 +12,7 @@ describe("ErrorHandler", () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
             sendStatus: jest.fn(),
+            send: jest.fn(),
             setHeader: jest.fn().mockReturnThis()
         }
     })
@@ -42,5 +43,18 @@ describe("ErrorHandler", () => {
         expect(response.status).toHaveBeenCalledWith(500)
         expect(console.error).toBeCalledWith(`Unexpected Error stack: ${defaultError.stack}`, defaultError)
         expect(response.json).toHaveBeenCalledWith({message: "Unexpected Error", error: defaultError})
+    })
+
+
+    test("Should return UnexpectedError in case of a different error", () => {
+        const syntaxError = new SyntaxError("Default Error body")
+        syntaxError.status = 400
+        syntaxError.body = ""
+
+        errorHandler(syntaxError, null, response, null)
+
+        expect(response.status).toHaveBeenCalledWith(400)
+        expect(console.error).toBeCalledWith(new SyntaxError("Default Error body"))
+        expect(response.json).toHaveBeenCalledWith({message: "Default Error body"})
     })
 })
