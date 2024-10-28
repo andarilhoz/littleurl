@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3030:3000"
+      - "3000:3000"
     environment:
       - NODE_ENV=development
       - DUPLICATE_RNG_INDEX_URL_MAX_ATTEMPT=3
@@ -21,6 +21,7 @@ services:
     volumes:
       - mongodb-data:/data/db
       - mongodb-log:/var/log/mongodb
+      - ./init-api-key.js:/docker-entrypoint-initdb.d/init-api-key.js
     ports:
       - "27017:27017"
     environment:
