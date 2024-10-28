@@ -42,7 +42,7 @@ async function initApp(){
         const apiKeyService = new APIKeyService(apiKeySchema)
         const apiKeysController = new APIKeysController(apiKeyService)
 
-        setupUrlRoutes(router, urlStorageController, apiKeysController)
+        setupUrlRoutes(router, urlStorageController, apiKeysController, apiKeyService)
 
         app.use('/', router)
         app.use(errorHandler)

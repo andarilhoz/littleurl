@@ -11,8 +11,9 @@ class UrlStorageController {
         try{
             const targetUrl = req.body.targetUrl
             const ttlSeconds = req.body.ttlSeconds
+            const apiKey = req.headers['x-api-key']
             
-            const newUrlStorage = await this.writeUrlStorageService.createUrlStorage(targetUrl, ttlSeconds)
+            const newUrlStorage = await this.writeUrlStorageService.createUrlStorage(targetUrl, apiKey, ttlSeconds)
             
             const protocol = req.protocol;
             const host = req.get('host');

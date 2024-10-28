@@ -49,6 +49,9 @@ describe("UrlStorage Controller", () => {
                 targetUrl: "http://google.com"
             },
             protocol: "http",
+            headers: {
+                'x-api-key': "12345abcd678efg"
+            },
             
             get: jest.fn(() => "localhost:3000")
         }
@@ -58,7 +61,7 @@ describe("UrlStorage Controller", () => {
         await urlStorageController.createUrlStorage(request, response, next)
 
         expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", undefined)
+        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", "12345abcd678efg", undefined)
         expect(response.json).toHaveBeenCalledWith({message: "http://localhost:3000/0Zh"})
         expect(response.status).toHaveBeenCalledWith(201)
     })
@@ -68,6 +71,10 @@ describe("UrlStorage Controller", () => {
             body: {
                 targetUrl: "http://google.com"
             }
+            ,
+            headers: {
+                'x-api-key': "12345abcd678efg"
+            }
         }
 
         writeUrlStorageService.createUrlStorage = jest.fn().mockImplementationOnce(() => {throw new Error('Database Error')})
@@ -75,7 +82,7 @@ describe("UrlStorage Controller", () => {
         await urlStorageController.createUrlStorage(request, response, next)
         
         expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", undefined)
+        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", "12345abcd678efg", undefined)
         expect(next).toHaveBeenCalledWith(new Error('Database Error'))
     })
 

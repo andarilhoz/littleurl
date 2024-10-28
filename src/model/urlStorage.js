@@ -5,6 +5,7 @@ class UrlStorageSchema {
         const urlStorageSchema = new Schema({
             indexUrl: {type: String, required: true, unique: true},
             targetUrl: {type: String, required: true},
+            apiKey: {type: String, required: true},
             createdAt: {type: Date, default: Date.now},
             expireAt: {type: Date, default: null}
         })

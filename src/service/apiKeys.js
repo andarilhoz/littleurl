@@ -12,7 +12,7 @@ class APIKeyService {
         try{
             const result = await this.apiKeySchema.findAPIKey(key)
             if ( result == null){
-                throw new UnauthorizedError()
+                throw new UnauthorizedError('Invalid API Key')
             }
             return result
         }catch(err){

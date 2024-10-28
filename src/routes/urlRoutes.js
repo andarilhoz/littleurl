@@ -1,7 +1,8 @@
+import validateApiKey from "../middlewares/validateApiKey.js"
 
-function setupUrlRoutes(router, urlStorageController, apiKeysController){
+function setupUrlRoutes(router, urlStorageController, apiKeysController, apiKeyService){
     try{
-        router.post('/url', urlStorageController.createUrlStorage)
+        router.post('/url', validateApiKey(apiKeyService), urlStorageController.createUrlStorage)
         router.get('/:indexUrl', urlStorageController.getUrlStorage)
         
         router.post('/apiKey', apiKeysController.createAPIKey)
