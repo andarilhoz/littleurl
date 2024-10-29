@@ -1,149 +1,145 @@
-import {afterEach, beforeEach, expect, jest} from '@jest/globals'
+import { afterEach, beforeEach, expect, jest } from "@jest/globals"
 
 import UrlStorageController from "../../controller/urlController"
-import { NotFoundError } from '../../errors/customErrors'
+import { NotFoundError } from "../../errors/customErrors"
 
-import he from 'he'
+import he from "he"
 
 describe("UrlStorage Controller", () => {
-    let response
-    let next
-    let writeUrlStorageService
-    let readUrlStorageService
+	let response
+	let next
+	let writeUrlStorageService
+	let readUrlStorageService
 
-    let urlStorageController
+	let urlStorageController
 
-    beforeEach(() => {
-        console.error = jest.fn()
+	beforeEach(() => {
+		console.error = jest.fn()
 
-        response = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-            sendStatus: jest.fn(),
-            setHeader: jest.fn().mockReturnThis(),
-            set: jest.fn()
-        }
+		response = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn(),
+			sendStatus: jest.fn(),
+			setHeader: jest.fn().mockReturnThis(),
+			set: jest.fn()
+		}
         
-        next = jest.fn();
+		next = jest.fn()
 
-        writeUrlStorageService = {
-            createUrlStorage: jest.fn(() => Promise.resolve({indexUrl: "0Zh"}))
-        }
+		writeUrlStorageService = {
+			createUrlStorage: jest.fn(() => Promise.resolve({ indexUrl: "0Zh" }))
+		}
 
-        readUrlStorageService = {
-            findUrlByIndex: jest.fn()
-        }
+		readUrlStorageService = {
+			findUrlByIndex: jest.fn()
+		}
 
-        urlStorageController = new UrlStorageController(writeUrlStorageService, readUrlStorageService)
-    })
+		urlStorageController = new UrlStorageController(writeUrlStorageService, readUrlStorageService)
+	})
 
-    afterEach(() => {
-        response.status.mockClear()
-        response.json.mockClear()
-        response.sendStatus.mockClear()
-        response.setHeader.mockClear()
-        next.mockClear()
-        readUrlStorageService.findUrlByIndex.mockClear()
-    })
+	afterEach(() => {
+		response.status.mockClear()
+		response.json.mockClear()
+		response.sendStatus.mockClear()
+		response.setHeader.mockClear()
+		next.mockClear()
+		readUrlStorageService.findUrlByIndex.mockClear()
+	})
 
-    test("Should return 201 when creating new urlStorage", async () => {
-        const request = {
-            body: {
-                targetUrl: "http://google.com"
-            },
-            protocol: "http",
-            headers: {
-                'x-api-key': "12345abcd678efg"
-            },
+	test("Should return 201 when creating new urlStorage", async () => {
+		const request = {
+			body: {
+				targetUrl: "http://google.com"
+			},
+			protocol: "http",
+			headers: {
+				"x-api-key": "12345abcd678efg"
+			},
             
-            get: jest.fn(() => "localhost:3000")
-        }
+			get: jest.fn(() => "localhost:3000")
+		}
 
+		await urlStorageController.createUrlStorage(request, response, next)
+
+		expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
+		expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", "12345abcd678efg", undefined)
+		expect(response.json).toHaveBeenCalledWith({ message: "http://localhost:3000/0Zh" })
+		expect(response.status).toHaveBeenCalledWith(201)
+	})
+
+	test("Should return 500 if an error occur while saving", async () => {
+		const request = {
+			body: {
+				targetUrl: "http://google.com"
+			}
+			,
+			headers: {
+				"x-api-key": "12345abcd678efg"
+			}
+		}
+
+		writeUrlStorageService.createUrlStorage = jest.fn().mockImplementationOnce(() => {throw new Error("Database Error")})
+
+		await urlStorageController.createUrlStorage(request, response, next)
         
+		expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
+		expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", "12345abcd678efg", undefined)
+		expect(next).toHaveBeenCalledWith(new Error("Database Error"))
+	})
 
-        await urlStorageController.createUrlStorage(request, response, next)
+	test("Should return 404 if url form db is null", async () => {
+		const request = {
+			params: {
+				indexUrl: "0zh"
+			}
+		}
 
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", "12345abcd678efg", undefined)
-        expect(response.json).toHaveBeenCalledWith({message: "http://localhost:3000/0Zh"})
-        expect(response.status).toHaveBeenCalledWith(201)
-    })
+		readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => {throw new NotFoundError()})
 
-    test("Should return 500 if an error occur while saving", async () => {
-        const request = {
-            body: {
-                targetUrl: "http://google.com"
-            }
-            ,
-            headers: {
-                'x-api-key': "12345abcd678efg"
-            }
-        }
-
-        writeUrlStorageService.createUrlStorage = jest.fn().mockImplementationOnce(() => {throw new Error('Database Error')})
-
-        await urlStorageController.createUrlStorage(request, response, next)
+		await urlStorageController.getUrlStorage(request, response, next)
         
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledTimes(1)
-        expect(writeUrlStorageService.createUrlStorage).toHaveBeenCalledWith("http://google.com", "12345abcd678efg", undefined)
-        expect(next).toHaveBeenCalledWith(new Error('Database Error'))
-    })
+		expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
+		expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
+		expect(next).toHaveBeenCalledWith(new NotFoundError())
+	})
 
+	test("Should return 307 with Location header if url from db is found", async () => {
+		const request = {
+			params: {
+				indexUrl: "0zh"
+			}
+		}
 
-    test("Should return 404 if url form db is null", async () => {
-        const request = {
-            params: {
-                indexUrl: "0zh"
-            }
-        }
+		readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => Promise.resolve({ targetUrl: "http://google.com" }))
 
-        readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => {throw new NotFoundError()})
-
-        await urlStorageController.getUrlStorage(request, response, next)
+		await urlStorageController.getUrlStorage(request, response, next)
         
-        expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
-        expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
-        expect(next).toHaveBeenCalledWith(new NotFoundError())
-    })
+		expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
+		expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
+		expect(response.set).toHaveBeenCalledWith({
+			"Cache-Control": "private, max-age=90",
+			"Referrer-Policy": "unsafe-url",
+			"Content-Security-Policy": "referrer always",
+			"Content-Type": "text/html",
+			"Location": he.decode("http://google.com")
+		})
+		expect(response.sendStatus).toHaveBeenCalledWith(307)
+	})
 
-    test("Should return 307 with Location header if url from db is found", async () => {
-        const request = {
-            params: {
-                indexUrl: "0zh"
-            }
-        }
+	test("Should return 500 if an error occur while finding from db", async () => {
+		const request = {
+			params: {
+				indexUrl: "0zh"
+			}
+		}
 
-        readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => Promise.resolve({targetUrl: "http://google.com"}))
+		readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => {throw new Error("Database Error")})
 
-        await urlStorageController.getUrlStorage(request, response, next)
+		await urlStorageController.getUrlStorage(request, response, next)
         
-        expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
-        expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
-        expect(response.set).toHaveBeenCalledWith({
-            'Cache-Control': 'private, max-age=90',
-            'Referrer-Policy': 'unsafe-url',
-            'Content-Security-Policy': 'referrer always',
-            'Content-Type': 'text/html',
-            'Location': he.decode("http://google.com")
-        })
-        expect(response.sendStatus).toHaveBeenCalledWith(307)
-    })
-
-    test("Should return 500 if an error occur while finding from db", async () => {
-        const request = {
-            params: {
-                indexUrl: "0zh"
-            }
-        }
-
-        readUrlStorageService.findUrlByIndex = jest.fn().mockImplementationOnce(() => {throw new Error('Database Error')})
-
-        await urlStorageController.getUrlStorage(request, response, next)
-        
-        expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
-        expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
-        expect(next).toHaveBeenCalledWith(new Error('Database Error'))
-    })
-    
+		expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledTimes(1)
+		expect(readUrlStorageService.findUrlByIndex).toHaveBeenCalledWith("0zh")
+		expect(next).toHaveBeenCalledWith(new Error("Database Error"))
+	})
 
 })
