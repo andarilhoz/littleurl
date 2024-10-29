@@ -5,8 +5,6 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-console.log("string"+process.env.MONGODB_URL_STRING)
-
 import setupUrlRoutes from "./routes/urlRoutes.js"
 import errorHandler from "./middlewares/errorHandler.js"
 
