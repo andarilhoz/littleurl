@@ -32,8 +32,6 @@ class UrlStorageController {
 			const result = await this.readUrlStorageService.findUrlByIndex(indexUrl)
 			res.set({
 				"Cache-Control": "private, max-age=90",
-				"Referrer-Policy": "unsafe-url",
-				"Content-Security-Policy": "referrer always",
 				"Content-Type": "text/html",
 				"Location": he.decode(result.targetUrl)
 			})
